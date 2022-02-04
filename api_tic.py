@@ -3,14 +3,15 @@ import pandas as pd
 
 class GetInfo():
 
-	def __init__(self, custom_verifyFp, count, hashtag):
-		# Данные куки для использования Тик-Ток Api
+	def __init__(self, custom_verifyFp, count, hashtag, delay):
+		# Данные куки для использования Тик-Ток Api  ссылка на получение https://sf16-scmcdn-va.ibytedtos.com/goofy/secsdk-captcha/va/2.15.21/index.html
 		# Количество постов для возвращения
 		# Хэштэг для поиска
 		self.hashtag = hashtag
 		self.count = count
 		self.frame = pd.DataFrame()
-		self.api = TikTokApi.get_instance(custom_verifyFp = "%s"%(custom_verifyFp))
+		self.delay = delay
+		self.api = TikTokApi.get_instance(custom_verifyFp = custom_verifyFp, request_delay = self.delay)
 
 	def getRow(self, row:dict, new_row:dict, prefix = '') -> dict:
 		# Получает словарь ответ от API Тик-Ток и трансформирует его в строку для добавления в Дата фрейм
@@ -57,8 +58,8 @@ class GetInfo():
 		# Создает запрос поиска по хэштегу и трансформирует ответ в Датафрейм
 		try:
 			self.ticToks = self.api.by_hashtag(count = self.count, hashtag = self.hashtag)
-		except:
-			print("Ошибка API перезапуститте программу")
+		except Exception as e:
+			print(e)
 			exit()
 		if self.ticToks:
 			for ind, ticTok in enumerate(self.ticToks):
@@ -70,9 +71,10 @@ class GetInfo():
 		# Сохраняет фрейм в текстовый файл
 		self.frame.to_csv('%s.csv'%(nameFile), index = False, sep = ';', encoding = 'utf-8')
 
-sber = GetInfo("verify_kz3tsdp6_iK5iiClW_VaND_4CoK_8oXB_j6Lm3hVVZ3y2",
+sber = GetInfo("verify_kz851dk3_s7P9tFLh_ZrgH_4FfM_A65L_yRQJE2MAHcz4",
 				30,
-				'Сбер'
+				'Сбер',
+				10
 	)
 sber.createFrame()
 sber.saveFrame('hastag_sber')
